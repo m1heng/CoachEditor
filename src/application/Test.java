@@ -21,7 +21,7 @@ public class Test {
         
         Cell cell = null; 
         // Access the cell first to update the value
-        cell = my_worksheet.getRow(1).getCell(10);
+        cell = my_worksheet.getRow(1).getCell(13);
         // Get current value and reduce 5 from it
         System.out.println(cell.getStringCellValue());
         

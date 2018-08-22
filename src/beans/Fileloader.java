@@ -9,7 +9,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class Fileloader {
 	public static String chooseFile(Stage s) {
 		FileChooser fc = new FileChooser();
-		fc.getExtensionFilters().add(new ExtensionFilter(".xlsx"));
+		fc.getExtensionFilters().add(new ExtensionFilter("excles","*.xlsx"));
 		
 		File f = fc.showOpenDialog(s);
 		if(f != null) {

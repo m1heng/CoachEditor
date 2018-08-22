@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainViewController">
    <children>
       <MenuBar prefHeight="25.0" prefWidth="800.0">
         <menus>
@@ -38,10 +40,39 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ListView layoutX="14.0" layoutY="81.0" prefHeight="452.0" prefWidth="180.0" />
-                        <TextField layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="180.0" />
-                        <Button layoutX="14.0" layoutY="46.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Search" />
-                        <Button layoutX="113.0" layoutY="46.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Clear" />
+                        <ListView fx:id="candidatelistview" layoutX="14.0" layoutY="81.0" prefHeight="452.0" prefWidth="180.0" />
+                        <TextField fx:id="searchtext" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="180.0" />
+                        <Button fx:id="searchbutton" layoutX="14.0" layoutY="46.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Search" />
+                        <Button fx:id="clearbutton" layoutX="113.0" layoutY="46.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Clear" />
+                        <TableView fx:id="sessionTableView" layoutX="208.0" layoutY="307.0" prefHeight="226.0" prefWidth="456.0">
+                          <columns>
+                            <TableColumn fx:id="coachcolumn" prefWidth="69.0" text="Coach" />
+                            <TableColumn fx:id="sessionnumcolumn" prefWidth="109.0" text="Provided Sessions" />
+                              <TableColumn fx:id="datecolumn" prefWidth="157.0" text="Session Date" />
+                              <TableColumn fx:id="formcolumn" prefWidth="111.0" text="Assessment Form" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                        <Label layoutX="208.0" layoutY="20.0" prefHeight="17.0" prefWidth="200.0" text="Candidate ID:" />
+                        <Label layoutX="208.0" layoutY="50.0" prefHeight="15.0" prefWidth="200.0" text="Candidate Name:" />
+                        <Label layoutX="208.0" layoutY="80.0" prefHeight="15.0" prefWidth="200.0" text="Program:" />
+                        <Label layoutX="208.0" layoutY="110.0" prefHeight="17.0" prefWidth="200.0" text="Final Contract Received &amp; Signed:" />
+                        <Label layoutX="208.0" layoutY="140.0" prefHeight="17.0" prefWidth="200.0" text="# of Sessions Required: " />
+                        <Label layoutX="208.0" layoutY="170.0" prefHeight="17.0" prefWidth="200.0" text="# of Sessions Provided: " />
+                        <Label layoutX="208.0" layoutY="200.0" prefHeight="17.0" prefWidth="200.0" text="# of Sessions Remaining: " />
+                        <Label layoutX="208.0" layoutY="230.0" prefHeight="17.0" prefWidth="200.0" text="Completed CA Program: " />
+                        <Label layoutX="208.0" layoutY="260.0" prefHeight="17.0" prefWidth="200.0" text="Current Status/Employer:" />
+                        <Label fx:id="candIDLabel" layoutX="415.0" layoutY="20.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
+                        <Label layoutX="415.0" layoutY="80.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
+                        <Label fx:id="candNameLabel" layoutX="415.0" layoutY="50.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
+                        <Label layoutX="415.0" layoutY="110.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
+                        <Label layoutX="415.0" layoutY="140.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
+                        <Label layoutX="415.0" layoutY="170.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
+                        <Label layoutX="415.0" layoutY="200.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
+                        <Label layoutX="415.0" layoutY="230.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
+                        <Label layoutX="415.0" layoutY="260.0" prefHeight="17.0" prefWidth="150.0" text="Label" />
                      </children>
                   </AnchorPane>
             </content>
