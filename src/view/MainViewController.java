@@ -23,6 +23,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -35,6 +36,14 @@ public class MainViewController {
 	private static final int CandidateStartIndex = 3;
 	private static final int CoachStartIndex = 10;
 	private static final int CoachNameRowIndex = 1;
+	private static final int CandIDIndex = 0;
+	private static final int CandYearIndex = 1;
+	private static final int CandNameIndex = 2;
+	private static final int CandProIndex = 3;
+	private static final int CandContractIndex = 4;
+	private static final int CandNumIndex = 5;
+	private static final int CandCAIndex = 8;
+	private static final int CandStatusIndex = 9;
 	
 	
 	
@@ -55,6 +64,36 @@ public class MainViewController {
 
     @FXML
     private TableColumn<Session, String> formcolumn;
+    
+    @FXML
+    private Label candIDLabel;
+    
+    @FXML
+    private Label candYearLabel;
+
+    @FXML
+    private Label candProLabel;
+
+    @FXML
+    private Label candNameLabel;
+
+    @FXML
+    private Label candContractLabel;
+
+    @FXML
+    private Label candNumLabel;
+
+    @FXML
+    private Label candProvidedLabel;
+
+    @FXML
+    private Label candRemainLabel;
+
+    @FXML
+    private Label candCALabel;
+
+    @FXML
+    private Label candStatusLabel;
 	
 	
 	private XSSFWorkbook dbworkbook;
@@ -149,6 +188,10 @@ public class MainViewController {
 		System.out.println(this.sesslist.size());
 		this.sessobslist = FXCollections.observableArrayList(sesslist);
 		this.sessionTableView.setItems(this.sessobslist);
+		
+	}
+	
+	public void fillCandidateInfo(int candid) {
 		
 	}
 	
