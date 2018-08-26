@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import beans.Candidate;
+import beans.Coach;
 import beans.Fileloader;
 import beans.Session;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -101,11 +102,13 @@ public class MainViewController {
 	
 	private ArrayList<Candidate> candlist;
 	private ArrayList<Session> sesslist;
+	private ArrayList<Coach> coachlist;
 	private ObservableList<Candidate> candobslist;
 	private ObservableList<Session> sessobslist;
 	
 	public void start(Stage primaryStage) throws IOException {
 		candlist = new ArrayList<Candidate>();
+		coachlist = new ArrayList<Coach>();
 		
 		
 		String xlsxpath = Fileloader.chooseFile(primaryStage);
@@ -116,7 +119,7 @@ public class MainViewController {
         dbsheet = dbworkbook.getSheetAt(0); 
         
         //read candidates
-        Iterator rite = dbsheet.rowIterator();
+        Iterator<Row> rite = dbsheet.rowIterator();
         while(rite.hasNext()) {
         	Row r = (Row)rite.next();
         	if(r.getRowNum() > 2) {
@@ -127,9 +130,18 @@ public class MainViewController {
         	}
         }
         
-        candobslist = FXCollections.observableArrayList(candlist);
-        candidatelistview.setItems(candobslist);
-        
+        //read all coach
+        Row coachRow = dbsheet.getRow(CoachNameRowIndex);
+        Iterator<Cell> cite = coachRow.cellIterator();
+        while(cite.hasNext()) {
+        	Cell c = cite.next();
+        	if(c.getColumnIndex() >= CoachStartIndex ) {
+        		String coachname = c.getStringCellValue();
+        		this.coachlist.add(new Coach(c.getColumnIndex(), coachname));
+        		cite.next();
+        		cite.next();
+        	}
+        }
         
         this.candidatelistview.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Candidate>() {
         	@Override
@@ -142,10 +154,14 @@ public class MainViewController {
         
 	}
 	
+	public void refreshCandidateListView() {
+		candobslist = FXCollections.observableArrayList(candlist);
+        candidatelistview.setItems(candobslist);
+        candidatelistview.getSelectionModel().selectFirst();
+	}
 	
 	public void populateSession(int candid) {
 		int rowIndex = candid + CandidateStartIndex -1;
-		
 		
 		//read session from dbxlsx
 		this.sesslist = new ArrayList<Session>();
@@ -159,8 +175,6 @@ public class MainViewController {
 			Cell dateCell = (Cell)cite.next();
 			Cell formCell = (Cell)cite.next();
 			Cell nameCell = this.dbsheet.getRow(CoachNameRowIndex).getCell(numCell.getColumnIndex());
-
-			System.out.println(nameCell.toString() + dateCell.toString() +  formCell.toString() + numCell.getNumericCellValue());
 			this.sesslist.add(new Session(nameCell.toString(), (int)numCell.getNumericCellValue(), dateCell.toString(), formCell.toString() ));
 		}
 		
@@ -184,17 +198,26 @@ public class MainViewController {
 	   	         return new SimpleStringProperty(p.getValue().num + "");
 	   	     }}
     	);
-		
-		System.out.println(this.sesslist.size());
 		this.sessobslist = FXCollections.observableArrayList(sesslist);
 		this.sessionTableView.setItems(this.sessobslist);
 		
-	}
-	
-	public void fillCandidateInfo(int candid) {
+		
+		
+		this.candIDLabel.setText(candid + "");
+		this.candYearLabel.setText(r.getCell(CandYearIndex).toString());
+		this.candNameLabel.setText(r.getCell(CandNameIndex).toString());
+		this.candContractLabel.setText(r.getCell(CandContractIndex).toString());
+		this.candCALabel.setText(r.getCell(CandCAIndex).toString());
+		this.candNumLabel.setText(r.getCell(CandNumIndex).toString());
+		this.candProLabel.setText(r.getCell(CandProIndex).toString());
+		this.candStatusLabel.setText(r.getCell(CandStatusIndex).toString());
+		
 		
 	}
 	
+	public void addCandidate() {
+		
+	}
 	
 	public static boolean isCellEmpty(final Cell cell) {
 	    if (cell == null || cell.getCellType() == Cell.CELL_TYPE_BLANK) {
