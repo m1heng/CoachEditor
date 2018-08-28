@@ -79,6 +79,7 @@
                         <Button layoutX="696.0" layoutY="460.0" mnemonicParsing="false" text="Delete" />
                         <Button layoutX="678.0" layoutY="331.0" mnemonicParsing="false" text="Add Session" />
                         <Button layoutX="50.0" layoutY="502.0" mnemonicParsing="false" text="Add Candidate" />
+                        <Button layoutX="696.0" layoutY="14.0" mnemonicParsing="false" text="Button" />
                      </children>
                   </AnchorPane>
             </content>
