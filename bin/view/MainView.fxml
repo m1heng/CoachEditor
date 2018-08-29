@@ -12,14 +12,15 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.MainViewController">
    <children>
-      <MenuBar prefHeight="25.0" prefWidth="800.0">
+      <MenuBar maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="800.0">
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
+              <MenuItem mnemonicParsing="false" onAction="#saveChanges" text="Save" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
@@ -42,8 +43,8 @@
                      <children>
                         <ListView fx:id="candidatelistview" layoutX="14.0" layoutY="81.0" prefHeight="415.0" prefWidth="180.0" />
                         <TextField fx:id="searchtext" layoutX="14.0" layoutY="14.0" prefHeight="25.0" prefWidth="180.0" />
-                        <Button fx:id="searchbutton" layoutX="14.0" layoutY="46.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Search" />
-                        <Button fx:id="clearbutton" layoutX="113.0" layoutY="46.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="81.0" text="Clear" />
+                        <Button fx:id="searchbutton" layoutX="14.0" layoutY="46.0" mnemonicParsing="false" onAction="#search" prefHeight="25.0" prefWidth="81.0" text="Search" />
+                        <Button fx:id="clearbutton" layoutX="113.0" layoutY="46.0" mnemonicParsing="false" onAction="#cancelsearch" prefHeight="25.0" prefWidth="81.0" text="Clear" />
                         <TableView fx:id="sessionTableView" layoutX="208.0" layoutY="307.0" prefHeight="226.0" prefWidth="456.0">
                           <columns>
                             <TableColumn fx:id="coachcolumn" prefWidth="69.0" text="Coach" />
@@ -75,18 +76,25 @@
                         <Label fx:id="candStatusLabel" layoutX="415.0" layoutY="279.0" prefHeight="17.0" prefWidth="150.0" />
                         <Label layoutX="208.0" layoutY="40.0" prefHeight="17.0" prefWidth="200.0" text="year:" />
                         <Label fx:id="candYearLabel" layoutX="415.0" layoutY="40.0" prefHeight="17.0" prefWidth="150.0" />
-                        <Button layoutX="675.0" layoutY="393.0" mnemonicParsing="false" text="Edit Selected" />
-                        <Button layoutX="696.0" layoutY="460.0" mnemonicParsing="false" text="Delete" />
-                        <Button layoutX="678.0" layoutY="331.0" mnemonicParsing="false" text="Add Session" />
-                        <Button layoutX="50.0" layoutY="502.0" mnemonicParsing="false" text="Add Candidate" />
-                        <Button layoutX="696.0" layoutY="14.0" mnemonicParsing="false" text="Button" />
+                        <Button layoutX="685.0" layoutY="395.0" mnemonicParsing="false" onAction="#editSession" text="Edit Session" />
+                        <Button layoutX="696.0" layoutY="460.0" mnemonicParsing="false" text="Delete" visible="false" />
+                        <Button layoutX="684.0" layoutY="328.0" mnemonicParsing="false" onAction="#addSession" text="Add Session" />
+                        <Button layoutX="50.0" layoutY="502.0" mnemonicParsing="false" onAction="#addCandidate" text="Add Candidate" />
+                        <Button layoutX="703.0" layoutY="14.0" mnemonicParsing="false" onAction="#editCandidate" text="Edit" />
                      </children>
                   </AnchorPane>
             </content>
           </Tab>
           <Tab text="Coaches">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="296.0" layoutY="256.0" text="Under Construction">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                     </children></AnchorPane>
             </content>
           </Tab>
         </tabs>

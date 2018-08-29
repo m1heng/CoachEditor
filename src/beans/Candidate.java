@@ -10,6 +10,6 @@ public class Candidate {
 	}
 	
 	public String toString() {
-		return "" + this.id + " " + this.name;
+		return this.name;
 	}
 }

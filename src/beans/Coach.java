@@ -1,5 +1,7 @@
 package beans;
 
+import javafx.stage.Stage;
+
 public class Coach {
 	public static final int COACHALIGNMENT = 9;
 	public static final int COACHWIDTH = 3;
@@ -18,4 +20,5 @@ public class Coach {
 	public String toString() {
 		return this.id + this.name;
 	}
+	
 }

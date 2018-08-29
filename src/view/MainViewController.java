@@ -3,6 +3,7 @@ package view;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,11 +25,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -46,7 +51,8 @@ public class MainViewController {
 	private static final int CandCAIndex = 8;
 	private static final int CandStatusIndex = 9;
 	
-	
+	@FXML
+	private TextField searchtext;
 	
 	@FXML
 	private ListView<Candidate> candidatelistview;
@@ -99,6 +105,7 @@ public class MainViewController {
 	
 	private XSSFWorkbook dbworkbook;
 	private XSSFSheet dbsheet;
+	private String path;
 	
 	private ArrayList<Candidate> candlist;
 	private ArrayList<Session> sesslist;
@@ -107,28 +114,21 @@ public class MainViewController {
 	private ObservableList<Session> sessobslist;
 	
 	public void start(Stage primaryStage) throws IOException {
-		candlist = new ArrayList<Candidate>();
+		
 		coachlist = new ArrayList<Coach>();
 		
 		
 		String xlsxpath = Fileloader.chooseFile(primaryStage);
+		this.path = xlsxpath;
 		FileInputStream input_document = new FileInputStream(new File(xlsxpath));
         // convert it into a POI object
 		dbworkbook = new XSSFWorkbook(input_document); 
+		input_document.close();
         // Read excel sheet that needs to be updated
         dbsheet = dbworkbook.getSheetAt(0); 
         
         //read candidates
-        Iterator<Row> rite = dbsheet.rowIterator();
-        while(rite.hasNext()) {
-        	Row r = (Row)rite.next();
-        	if(r.getRowNum() > 2) {
-        		String candname = r.getCell(2).getStringCellValue();
-        		int candid = (int) r.getCell(0).getNumericCellValue();
-        		Candidate cand = new Candidate(candid, candname);
-        		candlist.add(cand);
-        	}
-        }
+        this.readCandidates();
         
         //read all coach
         Row coachRow = dbsheet.getRow(CoachNameRowIndex);
@@ -138,10 +138,17 @@ public class MainViewController {
         	if(c.getColumnIndex() >= CoachStartIndex ) {
         		String coachname = c.getStringCellValue();
         		this.coachlist.add(new Coach(c.getColumnIndex(), coachname));
-        		cite.next();
-        		cite.next();
+        		System.out.println(coachname); 
+        		if(cite.hasNext()) {
+        			cite.next();
+        		}
+        		if(cite.hasNext()) {
+        			cite.next();
+        		}
         	}
         }
+        
+        
         
         this.candidatelistview.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Candidate>() {
         	@Override
@@ -150,12 +157,26 @@ public class MainViewController {
         	}
         });
         
-        
+        this.refreshCandidateListView(this.candlist);
         
 	}
 	
-	public void refreshCandidateListView() {
-		candobslist = FXCollections.observableArrayList(candlist);
+	public void readCandidates() {
+		candlist = new ArrayList<Candidate>();
+        Iterator<Row> rite = dbsheet.rowIterator();
+        while(rite.hasNext()) {
+        	Row r = (Row)rite.next();
+        	if(r.getRowNum() > 2) {
+        		String candname = r.getCell(2).toString();
+        		int candid = (int) r.getCell(0).getNumericCellValue();
+        		Candidate cand = new Candidate(candid, candname);
+        		candlist.add(cand);
+        	}
+        }
+	}
+	
+	public void refreshCandidateListView(ArrayList<Candidate> clist) {
+		candobslist = FXCollections.observableArrayList(clist);
         candidatelistview.setItems(candobslist);
         candidatelistview.getSelectionModel().selectFirst();
 	}
@@ -175,7 +196,7 @@ public class MainViewController {
 			Cell dateCell = (Cell)cite.next();
 			Cell formCell = (Cell)cite.next();
 			Cell nameCell = this.dbsheet.getRow(CoachNameRowIndex).getCell(numCell.getColumnIndex());
-			this.sesslist.add(new Session(nameCell.toString(), (int)numCell.getNumericCellValue(), dateCell.toString(), formCell.toString() ));
+			this.sesslist.add(new Session(rowIndex, numCell.getColumnIndex(), nameCell.toString(), numCell.toString(), dateCell.toString(), formCell.toString() ));
 		}
 		
 		this.coachcolumn.setCellValueFactory(new Callback<CellDataFeatures<Session, String>, ObservableValue<String>>() {
@@ -215,8 +236,153 @@ public class MainViewController {
 		
 	}
 	
-	public void addCandidate() {
+	
+	
+	public void addSession() throws IOException {
+		FXMLLoader Popfl = new FXMLLoader(getClass().getResource("/view/SessionView.fxml"));
+    	AnchorPane root = (AnchorPane)Popfl.load();
+    	SessionController popc = Popfl.getController();
+    	
+    	Stage PopStage = new Stage();
+    	popc.start(PopStage, this.coachlist, this);
+    	Scene PopSence = new Scene(root);
+    	PopStage.setScene(PopSence);
+    	PopStage.show();
+	}
+	
+	public void editSession() throws IOException {
+		FXMLLoader Popfl = new FXMLLoader(getClass().getResource("/view/SessionEdittingView.fxml"));
+    	AnchorPane root = (AnchorPane)Popfl.load();
+    	SessionEdittingController popc = Popfl.getController();
+    	
+    	Stage PopStage = new Stage();
+    	popc.start(PopStage, this, this.sessionTableView.getSelectionModel().getSelectedItem());
+    	Scene PopSence = new Scene(root);
+    	PopStage.setScene(PopSence);
+    	PopStage.show();
+	}
+	
+	public void _newSession(Coach c, String num, String form, String dates ) {
+		int rowIndex = this.candidatelistview.getSelectionModel().getSelectedItem().id + CandidateStartIndex -1;
+		int columnIndex = c.getIndex();
+		Row r = this.dbsheet.getRow(rowIndex);
+		Cell numCell = r.getCell(columnIndex);
+		if(numCell == null) {
+			r.createCell(columnIndex).setCellValue(num);
+		}else {
+			numCell.setCellValue(num);
+		}
 		
+		
+		Cell dateCell = r.getCell(columnIndex + 1);
+		if(dateCell == null) {
+			r.createCell(columnIndex + 1).setCellValue(dates);
+		}else {
+			dateCell.setCellValue(dates);
+		}
+		
+		Cell formCell = r.getCell(columnIndex + 2);
+		if(formCell == null) {
+			r.createCell(columnIndex + 2).setCellValue(form);
+		}else {
+			formCell.setCellValue(form);
+		}
+	
+		this.populateSession(this.candidatelistview.getSelectionModel().getSelectedItem().id);
+	
+	}
+	
+	public void _editSession(int rowIndex, int columnIndex, String num, String dates) {
+		this.dbsheet.getRow(rowIndex).getCell(columnIndex).setCellValue(num);
+		this.dbsheet.getRow(rowIndex).getCell(columnIndex+1).setCellValue(dates);
+		this.populateSession(this.candidatelistview.getSelectionModel().getSelectedItem().id);
+	}
+	
+	
+	public void addCandidate() throws IOException {
+		this.CandidateEdition(true);
+	}
+	
+	public void editCandidate() throws IOException {
+		this.CandidateEdition(false);
+	}
+	
+	public void CandidateEdition(boolean AorE) throws IOException {
+		FXMLLoader Popfl = new FXMLLoader(getClass().getResource("/view/CandidateView.fxml"));
+    	AnchorPane root = (AnchorPane)Popfl.load();
+    	CandidateViewController popc = Popfl.getController();
+    	Stage PopStage = new Stage();
+    	if(AorE) {
+    		popc.start(PopStage,AorE, this, -1, null,null,null,null,null,null,null );
+    	}else {
+    		popc.start(PopStage, AorE, this,
+    				this.candidatelistview.getSelectionModel().getSelectedItem().id + CandidateStartIndex -1,
+    				this.candNameLabel.getText(),
+    				this.candYearLabel.getText(),
+    				this.candProLabel.getText(),
+    				this.candContractLabel.getText(),
+    				this.candNumLabel.getText(),
+    				this.candCALabel.getText(),
+    				this.candStatusLabel.getText());
+    	}
+    	
+    	Scene PopSence = new Scene(root);
+    	PopStage.setScene(PopSence);
+    	PopStage.show();
+	}
+	
+	public void _editCandidate(int index, String name, String year, String program, String contract, String num, String ca, String status) {
+		int newindex = 0;
+		Row newRow = null;
+		
+		if(index == -1) {
+			newindex = this.dbsheet.getLastRowNum() + 1;
+			int newid    = this.dbsheet.getLastRowNum() - 1;
+			newRow = this.dbsheet.createRow(newindex);
+			newRow.createCell(0).setCellValue(newid);
+			newRow.createCell(CandYearIndex).setCellValue(year);
+			newRow.createCell(CandNameIndex).setCellValue(name);
+			newRow.createCell(CandProIndex).setCellValue(program);
+			newRow.createCell(CandContractIndex).setCellValue(contract);
+			newRow.createCell(CandNumIndex).setCellValue(num);
+			newRow.createCell(CandCAIndex).setCellValue(ca);
+			newRow.createCell(CandStatusIndex).setCellValue(status);
+		}else {
+			newindex = index;
+			newRow = this.dbsheet.getRow(index);
+			newRow.getCell(CandYearIndex).setCellValue(year);
+			newRow.getCell(CandNameIndex).setCellValue(name);
+			newRow.getCell(CandProIndex).setCellValue(program);
+			newRow.getCell(CandContractIndex).setCellValue(contract);
+			newRow.getCell(CandNumIndex).setCellValue(num);
+			newRow.getCell(CandCAIndex).setCellValue(ca);
+			newRow.getCell(CandStatusIndex).setCellValue(status);
+		}
+		
+		this.readCandidates();
+		this.refreshCandidateListView(this.candlist);
+	}
+	
+	public void search() {
+		String target = this.searchtext.getText();
+		ArrayList<Candidate> resultlist = new ArrayList<Candidate>();
+		for(int i = 0; i < this.candlist.size(); i++) {
+			Candidate o = this.candlist.get(i);
+			if(o.name.contains(target)) {
+				resultlist.add(o);
+			}
+		}
+		this.refreshCandidateListView(resultlist);
+	}
+	
+	public void cancelsearch() {
+		this.refreshCandidateListView(candlist);
+	}
+	
+	public void saveChanges() throws IOException {
+		FileOutputStream outFile =new FileOutputStream(new File(this.path));
+        this.dbworkbook.write(outFile);
+        outFile.close();
 	}
 	
 	public static boolean isCellEmpty(final Cell cell) {

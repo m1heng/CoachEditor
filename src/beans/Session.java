@@ -2,11 +2,15 @@ package beans;
 
 public class Session {
 	public String coach;
-	public int num;
+	public String num;
 	public String dates;
 	public String form;
+	public int rowIndex;
+	public int columnIndex;
 	
-	public Session(String coach, int num, String date, String form) {
+	public Session(int rowIndex, int columnIndex, String coach, String num, String date, String form) {
+		this.rowIndex = rowIndex;
+		this.columnIndex = columnIndex;
 		this.coach = coach;
 		this.num = num;
 		this.dates = date;
