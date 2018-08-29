@@ -10,6 +10,10 @@ public class Candidate {
 	}
 	
 	public String toString() {
-		return this.name;
+		if(this.name != null) {
+			return this.name;
+		}else {
+			return "Unknown";
+		}
 	}
 }

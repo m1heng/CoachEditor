@@ -18,7 +18,11 @@ public class Coach {
 	}
 	
 	public String toString() {
-		return this.id + this.name;
+		if(this.name != null && this.name != "") {
+			return this.name;
+		}else {
+			return "Unknown";
+		}
 	}
 	
 }

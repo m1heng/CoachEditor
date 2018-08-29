@@ -101,6 +101,30 @@ public class MainViewController {
 
     @FXML
     private Label candStatusLabel;
+    
+    @FXML
+    private ListView<Coach> coachlistview;
+
+    @FXML
+    private TextField coachsearchtext;
+
+    @FXML
+    private TableView<Session> coachsessionTableView;
+
+    @FXML
+    private TableColumn<Session, String> CoachCandColumn;
+
+    @FXML
+    private TableColumn<Session, String> CoachNumColumn;
+
+    @FXML
+    private TableColumn<Session, String> CoachdateColumn;
+
+    @FXML
+    private TableColumn<Session, String> CoachFormColumn;
+
+    @FXML
+    private Label coachnameLabel;
 	
 	
 	private XSSFWorkbook dbworkbook;
@@ -110,12 +134,13 @@ public class MainViewController {
 	private ArrayList<Candidate> candlist;
 	private ArrayList<Session> sesslist;
 	private ArrayList<Coach> coachlist;
+	private ObservableList<Coach> coachobslist;
 	private ObservableList<Candidate> candobslist;
 	private ObservableList<Session> sessobslist;
 	
 	public void start(Stage primaryStage) throws IOException {
 		
-		coachlist = new ArrayList<Coach>();
+		
 		
 		
 		String xlsxpath = Fileloader.chooseFile(primaryStage);
@@ -131,7 +156,110 @@ public class MainViewController {
         this.readCandidates();
         
         //read all coach
-        Row coachRow = dbsheet.getRow(CoachNameRowIndex);
+        this.readCoach();
+        
+        
+        
+        this.candidatelistview.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Candidate>() {
+        	@Override
+        	public void changed(ObservableValue<? extends Candidate> observable, Candidate oldc, Candidate newc) {
+        		populateSession(newc.id);
+        	}
+        });
+        
+        this.coachlistview.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Coach>() {
+        	@Override
+        	public void changed(ObservableValue<? extends Coach> observable, Coach oldc, Coach newc) {
+        		populateCoachSession(newc);
+        	}
+        });
+        
+        
+        
+        this.refreshCandidateListView(this.candlist);
+        this.refreshCoachListView(coachlist);
+	}
+	
+	
+	public void populateCoachSession(Coach co) {
+		this.coachnameLabel.setText(co.name);
+		ArrayList<Session> tempsessionlist = new ArrayList<Session>();
+		
+		
+		
+		Iterator<Row> rite = dbsheet.rowIterator();
+        while(rite.hasNext()) {
+        	Row r = (Row)rite.next();
+        	if(r.getRowNum() > 2) {
+        		if(r.getCell(co.getIndex()) != null    &&     r.getCell(co.getIndex()).toString() != "") {
+        			Session newSession = new Session(r.getRowNum(), co.getIndex(), co.name, r.getCell(co.getIndex()).toString(), r.getCell(co.getIndex()+1).toString(), r.getCell(co.getIndex()+2).toString());
+        			newSession.setCand(r.getCell(CandNameIndex).toString());
+        			tempsessionlist.add(newSession);
+        			
+        		}
+        	}
+        }
+        
+        this.CoachCandColumn.setCellValueFactory(new Callback<CellDataFeatures<Session, String>, ObservableValue<String>>() {
+	   	     public ObservableValue<String> call(CellDataFeatures<Session, String> p) {
+	   	         return new SimpleStringProperty(p.getValue().getCand());
+		   	 }}
+	   	);
+		this.CoachdateColumn.setCellValueFactory(new Callback<CellDataFeatures<Session, String>, ObservableValue<String>>() {
+		   	     public ObservableValue<String> call(CellDataFeatures<Session, String> p) {
+		   	         return new SimpleStringProperty(p.getValue().getDate());
+		   	     }}
+	   	);
+		this.CoachFormColumn.setCellValueFactory(new Callback<CellDataFeatures<Session, String>, ObservableValue<String>>() {
+		   	     public ObservableValue<String> call(CellDataFeatures<Session, String> p) {
+		   	         return new SimpleStringProperty(p.getValue().getForm());
+		   	     }}
+	   	);
+		this.CoachNumColumn.setCellValueFactory(new Callback<CellDataFeatures<Session, String>, ObservableValue<String>>() {
+		   	     public ObservableValue<String> call(CellDataFeatures<Session, String> p) {
+		   	         return new SimpleStringProperty(p.getValue().num + "");
+		   	     }}
+	   	);
+        
+		ObservableList<Session> tempobs = FXCollections.observableArrayList(tempsessionlist);
+		this.coachsessionTableView.setItems(tempobs);
+		
+	}
+
+
+	public void coachreasech() {
+		String target = this.coachsearchtext.getText();
+		ArrayList<Coach> resultlist = new ArrayList<Coach>();
+		for(int i = 0; i < this.coachlist.size(); i++) {
+			Coach o = this.coachlist.get(i);
+			if(o.name.contains(target)) {
+				resultlist.add(o);
+			}
+		}
+		this.refreshCoachListView(resultlist);
+	}
+	
+	public void coachclear() {
+		this.refreshCoachListView(this.coachlist);
+	}
+	
+	public void readCandidates() {
+		candlist = new ArrayList<Candidate>();
+        Iterator<Row> rite = dbsheet.rowIterator();
+        while(rite.hasNext()) {
+        	Row r = (Row)rite.next();
+        	if(r.getRowNum() > 2) {
+        		String candname = r.getCell(2).toString();
+        		int candid = (int) r.getCell(0).getNumericCellValue();
+        		Candidate cand = new Candidate(candid, candname);
+        		candlist.add(cand);
+        	}
+        }
+	}
+	
+	public void readCoach() {
+		coachlist = new ArrayList<Coach>();
+		Row coachRow = dbsheet.getRow(CoachNameRowIndex);
         Iterator<Cell> cite = coachRow.cellIterator();
         while(cite.hasNext()) {
         	Cell c = cite.next();
@@ -147,32 +275,12 @@ public class MainViewController {
         		}
         	}
         }
-        
-        
-        
-        this.candidatelistview.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Candidate>() {
-        	@Override
-        	public void changed(ObservableValue<? extends Candidate> observable, Candidate oldc, Candidate newc) {
-        		populateSession(newc.id);
-        	}
-        });
-        
-        this.refreshCandidateListView(this.candlist);
-        
 	}
 	
-	public void readCandidates() {
-		candlist = new ArrayList<Candidate>();
-        Iterator<Row> rite = dbsheet.rowIterator();
-        while(rite.hasNext()) {
-        	Row r = (Row)rite.next();
-        	if(r.getRowNum() > 2) {
-        		String candname = r.getCell(2).toString();
-        		int candid = (int) r.getCell(0).getNumericCellValue();
-        		Candidate cand = new Candidate(candid, candname);
-        		candlist.add(cand);
-        	}
-        }
+	public void refreshCoachListView(ArrayList<Coach> clist) {
+		coachobslist = FXCollections.observableArrayList(clist);
+		this.coachlistview.setItems(coachobslist);
+		this.coachlistview.getSelectionModel().selectFirst();
 	}
 	
 	public void refreshCandidateListView(ArrayList<Candidate> clist) {
@@ -297,8 +405,7 @@ public class MainViewController {
 		this.dbsheet.getRow(rowIndex).getCell(columnIndex+1).setCellValue(dates);
 		this.populateSession(this.candidatelistview.getSelectionModel().getSelectedItem().id);
 	}
-	
-	
+
 	public void addCandidate() throws IOException {
 		this.CandidateEdition(true);
 	}

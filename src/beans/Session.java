@@ -1,6 +1,7 @@
 package beans;
 
 public class Session {
+	public String cand;
 	public String coach;
 	public String num;
 	public String dates;
@@ -15,6 +16,14 @@ public class Session {
 		this.num = num;
 		this.dates = date;
 		this.form = form;
+	}
+	
+	public void setCand(String name) {
+		this.cand = name;
+	}
+	
+	public String getCand() {
+		return this.cand;
 	}
 	
 	public String getName() {
